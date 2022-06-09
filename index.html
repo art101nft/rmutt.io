@@ -24,7 +24,6 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <link rel="stylesheet" href="/css/normalize.css">
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="stylesheet" href="/css/styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -59,20 +58,8 @@
 
 <div class="container-fluid bg-transparent p-2">
   <div class="row justify-content-center">
-    <div class="col-12 text-center" id="toiletPreview">
-      <model-viewer bounds="tight" src="0058.glb" ar ar-modes="webxr scene-viewer quick-look" camera-controls environment-image="neutral" poster="/img/poster.webp" shadow-intensity=".1" exposure=".8" shadow-softness="10">
-        <div class="progress-bar hide" slot="progress-bar">
-            <div class="update-bar"></div>
-        </div>
-        <button slot="ar-button" id="ar-button">
-            View in your space
-        </button>
-        <div id="ar-prompt">
-            <img src="/img/ar_hand_prompt.png">
-        </div>
-      </model-viewer>
-      <script src="/js/script.js"></script>
-      <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <div class="col-12 text-center">
+      <img src="img/0058.png" class="img-fluid" style="max-height: 512px"/>
     </div>
     <div class="col-xs-10 col-sm-10 col-md-10 col-lg-8 col-xl-8 text-center">
       <h4 style="color: #1F2333;"><b>Taking the piss outta NFTs?</b></h4>
