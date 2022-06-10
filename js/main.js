@@ -3,7 +3,7 @@ const isLive = false;
 window.addEventListener('DOMContentLoaded', async () => {
   let accounts;
   const onboarding = new MetaMaskOnboarding();
-  const mintButton = document.getElementById('mintButton');
+  const mintReserve = document.getElementById('mintReserve');
 
   // Offer to install MetaMask if it's not installed nor do we
   // detect a replacement such as Coinbase wallet
@@ -18,9 +18,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   await updateMintStatus();
   let _i = setInterval(updateMintStatus, 10000);
 
-  mintButton.onclick = async () => {
+  mintReserve.onclick = async () => {
     clearInterval(_i);
-    await _mint();
+    await _mintReserve();
   };
 
   ethereum.on('accountsChanged', function (accounts) {
@@ -28,9 +28,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   })
 });
 
-async function _mint() {
+async function _mintReserve() {
   try {
-    await mint();
+    await mintReserve();
   } catch(e) {
     // console.log(e)
     if (e.message) {
@@ -99,41 +99,42 @@ async function updateMintStatus() {
   const walletAddress = await getMMAccount();
   const walletShort = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4)
   const contract = new w3.eth.Contract(contractABI, contractAddress, {from: walletAddress});
-  const earlyAccessMode = await contract.methods.earlyAccessMode().call();
-  const salePrice = await contract.methods.salePrice().call();
   const currentSupply = await contract.methods.totalSupply().call();
   const maxSupply = await contract.methods.maxSupply().call();
-  const maxMints = await contract.methods.maxMints().call();
+  const maxMints = await contract.methods.maxMint().call();
   const merkleSet = await contract.methods.merkleSet().call();
+  const reserveMinted = await contract.methods.reserveMinted().call();
+  const publicMinted = await contract.methods.publicMinted().call();
+  const reservedSupply = await contract.methods.reservedSupply().call();
   const balance = await contract.methods.balanceOf(walletAddress).call();
-  const earlyAccessMinted = await contract.methods.earlyAccessMinted(walletAddress).call();
-  const salePriceEth = w3.utils.fromWei(salePrice);
+  const publicBalance = await contract.methods.publicBalance(walletAddress).call();
+  const reserveBalance = await contract.methods.reserveBalance(walletAddress).call();
   const mintingIsActive = await contract.methods.mintingIsActive().call();
   const mintedOut = currentSupply == maxSupply;
   const dist = await getDistribution();
   if (mintedOut) {
-    updateMintMessage(`That's all folks, supply is minted out! Check secondary markets to purchase a BASΞD VITALIK.<br><br><a href="https://opensea.io/collection/basedvitalik" target=_blank>Opensea</a>`);
+    updateMintMessage(`That's all folks, supply is minted out! Check secondary markets to purchase an RMutt urinal.<br><br><a href="https://opensea.io/collection/rmutt" target=_blank>Opensea</a>`);
     return false;
   }
   if (!mintingIsActive) {
-    if (dist && earlyAccessMode && merkleSet) {
-      let remaining = dist.Amount - earlyAccessMinted;
+    if (dist && merkleSet) {
+      let remaining = dist.Amount - reserveBalance;
       if (remaining < 0) {
         remaining = 0;
       }
-      updateMintMessage(`Minting is not active yet! Check back later.<br><br>Wallet ${walletShort} is whitelisted for ${dist.Amount} Vitaliks. ${remaining} remaining.<div style="margin-top: 8px"></div><h2><b>${currentSupply} / ${maxSupply} minted</b></h2><div style="margin-top: 8px"></div><h3><b>${salePriceEth} Ξ</b></h3>`);
+      updateMintMessage(`Minting is not active yet! Check back later.<br><br>Wallet ${walletShort} is whitelisted for ${dist.Amount} toilets. ${remaining} remaining.<div style="margin-top: 8px"></div><h2><b>${reserveMinted} / ${reservedSupply} reserves minted.<br/>${publicMinted} / ${maxSupply - reservedSupply} public minted.</b></h2><div style="margin-top: 8px"></div>`);
       return false;
     } else {
-      updateMintMessage(`Minting is not active yet! Check back later.<br><br>Wallet ${walletShort} is not whitelisted for any Vitaliks.</br><div style="margin-top: 8px"></div><h2><b>${currentSupply} / ${maxSupply} minted</b></h2><div style="margin-top: 8px"></div><h3><b>${salePriceEth} Ξ</b></h3>`);
+      updateMintMessage(`Minting is not active yet! Check back later.<br><br>Wallet ${walletShort} is not whitelisted for any toilets.</br><div style="margin-top: 8px"></div><h2><b>${reserveMinted} / ${reservedSupply} reserves minted.<br/>${publicMinted} / ${maxSupply - reservedSupply} public minted.</b></h2><div style="margin-top: 8px"></div>`);
       return false;
     }
   }
-  if (dist && earlyAccessMode) {
-    let remaining = dist.Amount - earlyAccessMinted;
+  if (dist) {
+    let remaining = dist.Amount - reserveBalance;
     if (remaining < 0) {
       remaining = 0;
     }
-    updateMintMessage(`Wallet ${walletShort} is whitelisted for ${remaining} more Vitaliks (${dist.Amount} whitelisted, ${earlyAccessMinted} minted). </br><div style="margin-top: 8px"></div><h2><b>${currentSupply} / ${maxSupply} minted</b></h2><div style="margin-top: 8px"></div><h3><b>${salePriceEth} Ξ</b></h3>`);
+    updateMintMessage(`Wallet ${walletShort} is whitelisted for ${remaining} more toilets (${dist.Amount} whitelisted, ${reserveBalance} minted). </br><div style="margin-top: 8px"></div><h2><b>${reserveMinted} / ${reservedSupply} reserves minted.<br/>${publicMinted} / ${maxSupply - reservedSupply} public minted.</b></h2><div style="margin-top: 8px"></div>`);
     if (remaining == 0) {
       document.getElementById('mintForm').classList.add('hidden');
       return false;
@@ -141,15 +142,16 @@ async function updateMintStatus() {
     document.getElementById('numberOfTokens').max = 50;
     document.getElementById('numberOfTokens').value = remaining;
     document.getElementById('mintForm').classList.remove('hidden');
-  } else if (!dist && earlyAccessMode) {
-    updateMintMessage(`Wallet ${walletShort} is not whitelisted. Check back during public minting.`);
-  } else if (!earlyAccessMode) {
-    updateMintMessage(`Public minting is live! Limit ${maxMints} per transaction. No limit per wallet. You have ${balance} in your wallet.</br><div style="margin-top: 8px"></div><h2><b>${currentSupply} / ${maxSupply} minted</b></h2><div style="margin-top: 8px"></div><h3><b>${salePriceEth} Ξ</b></h3>`);
+    document.getElementById('mintButton').classList.remove('hidden');
+    document.getElementById('mintReserve').classList.remove('hidden');
+  } else {
+    updateMintMessage(`Public minting is live! Limit ${maxMints} per transaction. Max ${maxMints} per wallet. You have ${publicBalance} public mints and ${balance} total in your wallet.</br><div style="margin-top: 8px"></div><h2><b>${reserveMinted} / ${reservedSupply} reserves minted.<br/>${publicMinted} / ${maxSupply - reservedSupply} public minted.</b></h2><div style="margin-top: 8px"></div>`);
     document.getElementById('mintForm').classList.remove('hidden');
+    document.getElementById('mintButton').classList.remove('hidden');
   }
 }
 
-async function mint() {
+async function mintReserve() {
   let etherscan_uri = 'etherscan.io';
   let opensea_uri = 'opensea.io';
   // First do nothing if MetaMask is on Mainnet and we're not live yet
@@ -174,14 +176,11 @@ async function mint() {
     document.getElementById('numberOfTokens').value = amountToMint;
   }
 
+  document.getElementById('mintButton').classList.add('hidden');
+  document.getElementById('mintReserve').classList.add('hidden');
+
   // Define the contract we want to use
   const contract = new w3.eth.Contract(contractABI, contractAddress, {from: walletAddress});
-
-  // Check if we're in earlyAccessMode to do more checks
-  const earlyAccessMode = await contract.methods.earlyAccessMode().call();
-
-  // Grab sale price
-  const salePrice = await contract.methods.salePrice().call();
 
   // Fail if sales are paused
   const mintingIsActive = await contract.methods.mintingIsActive().call();
@@ -198,14 +197,10 @@ async function mint() {
     return false;
   }
 
-  if (earlyAccessMode) {
+  // Get the merkle tree distribution info for the user
+  const dist = await getDistribution();
 
-    // Get the merkle tree distribution info for the user
-    const dist = await getDistribution();
-    if (!dist) {
-      updateMintMessage(`Minting is currently only for holders of Non-Fungible Soup NFTs. Your wallet address is not on the whitelist. Come back when public minting has started.`);
-      return false;
-    }
+  if (dist) {
 
     // Fail if the merkle root hash is not set
     const merkleSet = await contract.methods.merkleSet().call();
@@ -215,14 +210,14 @@ async function mint() {
     }
 
     // Fail if the amountToMint is more than allowed
-    const balance = await contract.methods.balanceOf(walletAddress).call();
+    const balance = await contract.methods.reserveBalance(walletAddress).call();
     if (Number(Number(amountToMint) + Number(balance)) > Number(dist.Amount)) {
       updateMintMessage(`Cannot mint more than your whitelisted amount of ${dist.Amount}. You already have ${balance}.`);
       return false;
     }
 
     // Estimate gas limit
-    await contract.methods.mintPublic(dist.Index, walletAddress, Number(dist.Amount), dist.Proof, amountToMint).estimateGas({from: walletAddress, value: salePrice * amountToMint}, function(err, gas){
+    await contract.methods.mintReserve(dist.Index, walletAddress, Number(dist.Amount), dist.Proof, amountToMint).estimateGas({from: walletAddress}, function(err, gas){
       gasLimit = gas;
     });
 
@@ -233,33 +228,34 @@ async function mint() {
 
     // Attempt minting
     console.log(`Attempting to mint ${amountToMint} tokens with gas limit of ${gasLimit} gas and gas price of ${gasPrice}`);
-    res = await contract.methods.mintPublic(dist.Index, walletAddress, Number(dist.Amount), dist.Proof, amountToMint).send({
+    res = await contract.methods.mintReserve(dist.Index, walletAddress, Number(dist.Amount), dist.Proof, amountToMint).send({
       from: walletAddress,
-      value: salePrice * amountToMint,
+      value: 0,
       gasPrice: gasPrice,
       gas: gasLimit
     });
     console.log(res);
   } else {
-    // Estimate gas limit
-    await contract.methods.mintPublic(0, walletAddress, 0, [], amountToMint).estimateGas({from: walletAddress, value: salePrice * amountToMint}, function(err, gas){
-      gasLimit = gas;
-    });
-
-    // Show loading icon
-    document.getElementById('mintForm').classList.add('hidden');
-    document.getElementById('loading').classList.remove('hidden');
-    updateMintMessage('');
-
-    // If not in earlyAccessMode, we can just use empty amounts in func
-    console.log(`Attempting to mint ${amountToMint}`);
-    res = await contract.methods.mintPublic(0, walletAddress, 0, [], amountToMint).send({
-      from: walletAddress,
-      value: salePrice * amountToMint,
-      gasPrice: gasPrice,
-      gas: gasLimit
-    });
-    console.log(res);
+    alert('not whitelisted')
+    // // Estimate gas limit
+    // await contract.methods.mintPublic(0, walletAddress, 0, [], amountToMint).estimateGas({from: walletAddress, value: salePrice * amountToMint}, function(err, gas){
+    //   gasLimit = gas;
+    // });
+    //
+    // // Show loading icon
+    // document.getElementById('mintForm').classList.add('hidden');
+    // document.getElementById('loading').classList.remove('hidden');
+    // updateMintMessage('');
+    //
+    // // If not in earlyAccessMode, we can just use empty amounts in func
+    // console.log(`Attempting to mint ${amountToMint}`);
+    // res = await contract.methods.mintPublic(0, walletAddress, 0, [], amountToMint).send({
+    //   from: walletAddress,
+    //   value: salePrice * amountToMint,
+    //   gasPrice: gasPrice,
+    //   gas: gasLimit
+    // });
+    // console.log(res);
   }
 
   document.getElementById('mintForm').classList.remove('hidden');

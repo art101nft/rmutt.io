@@ -83,20 +83,22 @@
             <h4 style="color: #1F2333;"><b>Taking the piss outta NFTs?</b></h4>
             <h3><b>You'll need a urinal. It's free.</b></h3>
             <div class="" style="margin-top:16px;"></div>
-            <a href="#" id="mintPublic" class="Mutt_Button2" style="margin-right:16px;">Mint Urinal</a>
-            <div class="col-xs-8 col-sm-8 col-md-6 col-lg=4 col-xl-4 text-center w-75"  style="background-color: #ee3024; color:white; padding: 16px;">
+            <div class="col text-center w-75"  style="background-color: #ee3024; color:white; padding: 16px; margin: auto;">
                 <h5 style="color:white;"><b id="mintMessage"><i id="loading" class="fas fa-circle-notch fa-2x fa-spin"></i></b></h5>
                 <!-- <div style="margin-top: 16px;"></div> -->
                 <div id="mintForm" class="hidden">
                   <input type="number" step="1" name="amount" min="1" max="30" id="numberOfTokens">
                   <div style="margin-top: 8px"></div>
-                  <a id="mintButton" href="#">MINT</a>
+                  <!-- <a id="mintButton" href="#">MINT</a> -->
                   <div style="margin-top: 8px"></div>
                 </div>
                 <i id="loading" class="fas fa-circle-notch fa-2x fa-spin hidden"></i>
                 <div style="margin-top: 2px"></div>
                 <a href="" style="font-size: 12px;">refresh</a>
             </div>
+            <a id="mintReserve" class="Mutt_Button2 hidden" style="margin-right:16px;">Claim Reserved Urinal</a>
+            <a id="mintButton" class="Mutt_Button2 hidden" style="margin-right:16px;">Mint Public Urinal</a>
+
         </div>
         <div class="col-12 text-center">
           <div class="" style="margin-top:16px;"></div>
@@ -397,5 +399,36 @@
           r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
           ga('create','UA-XXXXX-X','auto');ga('send','pageview');
       </script>
+
+      <style>
+          #numberOfTokens {
+            color: black;
+            text-align: center;
+            width: 4em;
+            font-size: 2em;
+            border: 1px solid white;
+            margin: 6px;
+          }
+
+          /* #mintButton {
+            text-decoration: none;
+            font-size: 2em;
+            font-weight: bold;
+            padding: 6px 8px;
+            color: #ee3024;
+            background-color: white;
+          }
+
+          #mintButton:hover {
+            text-decoration: none;
+            color: white;
+            background-color: #ee3024;
+          } */
+
+          .hidden {
+            display: none;
+          }
+      </style>
+
     </body>
 </html>
