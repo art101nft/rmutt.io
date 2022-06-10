@@ -1,4 +1,4 @@
-contractAddress = '0x1F39C80F64B019c24094dc728B92F749105e1f4D'; // tesnet
+contractAddress = '0x471365176F83E055D70e050E28D5c654651f12F9'; // tesnet
 contractABI = [
   {
     "inputs": [

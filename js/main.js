@@ -4,6 +4,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   let accounts;
   const onboarding = new MetaMaskOnboarding();
   const mintReserve = document.getElementById('mintReserve');
+  const mintPublic = document.getElementById('mintButton');
 
   // Offer to install MetaMask if it's not installed nor do we
   // detect a replacement such as Coinbase wallet
@@ -23,6 +24,11 @@ window.addEventListener('DOMContentLoaded', async () => {
     await _mintReserve();
   };
 
+  mintPublic.onclick = async () => {
+    clearInterval(_i);
+    await _mintPublic();
+  };
+
   ethereum.on('accountsChanged', function (accounts) {
     window.location.href = '';
   })
@@ -38,8 +44,21 @@ async function _mintReserve() {
     } else {
       alert(e.toString());
     }
-    document.getElementById('mintForm').classList.remove('hidden');
-    document.getElementById('loading').classList.add('hidden');
+    await updateMintStatus();
+    return false;
+  }
+}
+
+async function _mintPublic() {
+  try {
+    await mintPublic();
+  } catch(e) {
+    // console.log(e)
+    if (e.message) {
+      alert(e.message);
+    } else {
+      alert(e.toString());
+    }
     await updateMintStatus();
     return false;
   }
@@ -134,9 +153,10 @@ async function updateMintStatus() {
     if (remaining < 0) {
       remaining = 0;
     }
-    updateMintMessage(`Wallet ${walletShort} is whitelisted for ${remaining} more toilets (${dist.Amount} whitelisted, ${reserveBalance} minted). </br><div style="margin-top: 8px"></div><h2><b>${reserveMinted} / ${reservedSupply} reserves minted.<br/>${publicMinted} / ${maxSupply - reservedSupply} public minted.</b></h2><div style="margin-top: 8px"></div>`);
+    updateMintMessage(`Wallet ${walletShort} is whitelisted for ${remaining} more toilets (${dist.Amount} whitelisted, ${reserveBalance} minted). </br>Minted ${publicBalance} / ${maxMints} public. <br/><div style="margin-top: 8px"></div><h2><b>${reserveMinted} / ${reservedSupply} reserves minted.<br/>${publicMinted} / ${maxSupply - reservedSupply} public minted.</b></h2><div style="margin-top: 8px"></div>`);
     if (remaining == 0) {
-      document.getElementById('mintForm').classList.add('hidden');
+      document.getElementById('mintForm').classList.remove('hidden');
+      document.getElementById('mintButton').classList.remove('hidden');
       return false;
     }
     document.getElementById('numberOfTokens').max = 50;
@@ -236,27 +256,93 @@ async function mintReserve() {
     });
     console.log(res);
   } else {
-    alert('not whitelisted')
-    // // Estimate gas limit
-    // await contract.methods.mintPublic(0, walletAddress, 0, [], amountToMint).estimateGas({from: walletAddress, value: salePrice * amountToMint}, function(err, gas){
-    //   gasLimit = gas;
-    // });
-    //
-    // // Show loading icon
-    // document.getElementById('mintForm').classList.add('hidden');
-    // document.getElementById('loading').classList.remove('hidden');
-    // updateMintMessage('');
-    //
-    // // If not in earlyAccessMode, we can just use empty amounts in func
-    // console.log(`Attempting to mint ${amountToMint}`);
-    // res = await contract.methods.mintPublic(0, walletAddress, 0, [], amountToMint).send({
-    //   from: walletAddress,
-    //   value: salePrice * amountToMint,
-    //   gasPrice: gasPrice,
-    //   gas: gasLimit
-    // });
-    // console.log(res);
+    alert('Wallet not whitelisted. Mint from the public supply.');
+    return false;
   }
+
+  document.getElementById('mintForm').classList.remove('hidden');
+  document.getElementById('loading').classList.add('hidden');
+
+  if (res.status) {
+    updateMintMessage(`Success! Head to <a href="https://${opensea_uri}/account?search[resultModel]=ASSETS&search[sortBy]=LAST_TRANSFER_DATE&search[sortAscending]=false">OpenSea</a> to see your NFTs!`);
+    document.getElementById('mintForm').innerHTML = `<a href="https://${etherscan_uri}/tx/${res.transactionHash}">Etherscan</a>`;
+  } else {
+    updateMintMessage('FAILED!');
+    document.getElementById('mintForm').innerHTML = `<a href="">Try Again</a>`;
+  }
+}
+
+async function mintPublic() {
+  let etherscan_uri = 'etherscan.io';
+  let opensea_uri = 'opensea.io';
+  // First do nothing if MetaMask is on Mainnet and we're not live yet
+  if (!isLive) {
+    if (window.ethereum.chainId == "0x1") {
+      updateMintMessage(`Mainnet contracts not available yet. Try again later.`);
+      return false;
+    }
+    etherscan_uri = 'rinkeby.etherscan.io';
+    opensea_uri = 'testnets.opensea.io';
+  }
+
+  let res;
+  let loadModal;
+  let gasLimit;
+  const w3 = new Web3(Web3.givenProvider || "http://127.0.0.1:7545");
+  const walletAddress = await getMMAccount();
+  const gasPrice = await w3.eth.getGasPrice();
+  let amountToMint = document.getElementById('numberOfTokens').value;
+  if (amountToMint <= 0 || isNaN(amountToMint)) {
+    amountToMint = 1;
+    document.getElementById('numberOfTokens').value = amountToMint;
+  }
+
+  document.getElementById('mintButton').classList.add('hidden');
+  document.getElementById('mintReserve').classList.add('hidden');
+
+  // Define the contract we want to use
+  const contract = new w3.eth.Contract(contractABI, contractAddress, {from: walletAddress});
+
+  // Fail if sales are paused
+  const mintingIsActive = await contract.methods.mintingIsActive().call();
+  if (!mintingIsActive) {
+    updateMintMessage(`Sales are currently paused on this contract. Try again later.`);
+    return false;
+  }
+
+  // Fail if requested amount would exceed supply
+  let currentSupply = await contract.methods.totalSupply().call();
+  let maxSupply = await contract.methods.maxSupply().call();
+  if (Number(currentSupply) + Number(amountToMint) > Number(maxSupply)) {
+    updateMintMessage(`Requesting ${amountToMint} would exceed the maximum token supply of ${maxSupply}. Current supply is ${currentSupply}, so try minting ${maxSupply - currentSupply}.`)
+    return false;
+  }
+
+  // Fail if requested amount would exceed max per wallet
+  let publicBalance = await contract.methods.publicBalance(walletAddress).call();
+  let maxWallet = await contract.methods.maxWallet().call();
+  if (Number(amountToMint) + Number(publicBalance) > Number(maxWallet)) {
+    updateMintMessage(`Requesting ${amountToMint} would exceed the maximum wallet amount of ${maxWallet}. Current balance is ${publicBalance}, so try minting ${maxWallet - publicBalance}.`)
+    return false;
+  }
+
+  // Estimate gas limit
+  await contract.methods.mintPublic(amountToMint).estimateGas({from: walletAddress}, function(err, gas){
+    gasLimit = gas;
+  });
+
+  // Show loading icon
+  document.getElementById('mintForm').classList.add('hidden');
+  document.getElementById('loading').classList.remove('hidden');
+  updateMintMessage('');
+
+  console.log(`Attempting to mint ${amountToMint}`);
+  res = await contract.methods.mintPublic(amountToMint).send({
+    from: walletAddress,
+    gasPrice: gasPrice,
+    gas: gasLimit
+  });
+  console.log(res);
 
   document.getElementById('mintForm').classList.remove('hidden');
   document.getElementById('loading').classList.add('hidden');
