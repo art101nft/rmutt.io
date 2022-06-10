@@ -29,7 +29,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-        <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+        <script src="/js/vendor/modernizr-3.11.2.min.js"></script>
         <script src="https://kit.fontawesome.com/25673ce6e4.js" crossorigin="anonymous"></script>
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-1D24DTP8CK"></script>
         <script src="https://unpkg.com/focus-visible@5.0.2/dist/focus-visible.js" defer></script>
@@ -63,7 +63,7 @@
     </div>
 
 
-   
+
 
 
 
@@ -83,7 +83,20 @@
             <h4 style="color: #1F2333;"><b>Taking the piss outta NFTs?</b></h4>
             <h3><b>You'll need a urinal. It's free.</b></h3>
             <div class="" style="margin-top:16px;"></div>
-           <a href="#" class="Mutt_Button2" style="margin-right:16px;">Mint Urinal .Soon</a>
+            <a href="#" id="mintPublic" class="Mutt_Button2" style="margin-right:16px;">Mint Urinal</a>
+            <div class="col-xs-8 col-sm-8 col-md-6 col-lg=4 col-xl-4 text-center w-75"  style="background-color: #ee3024; color:white; padding: 16px;">
+                <h5 style="color:white;"><b id="mintMessage"><i id="loading" class="fas fa-circle-notch fa-2x fa-spin"></i></b></h5>
+                <!-- <div style="margin-top: 16px;"></div> -->
+                <div id="mintForm" class="hidden">
+                  <input type="number" step="1" name="amount" min="1" max="30" id="numberOfTokens">
+                  <div style="margin-top: 8px"></div>
+                  <a id="mintButton" href="#">MINT</a>
+                  <div style="margin-top: 8px"></div>
+                </div>
+                <i id="loading" class="fas fa-circle-notch fa-2x fa-spin hidden"></i>
+                <div style="margin-top: 2px"></div>
+                <a href="" style="font-size: 12px;">refresh</a>
+            </div>
         </div>
         <div class="col-12 text-center">
           <div class="" style="margin-top:16px;"></div>
@@ -110,7 +123,7 @@
         </div>
 
         <div class="col-xs-10 col-sm-10 col-md-10 col-lg-8 col-xl-8 text-left mx-2">
-           
+
           <p>It's not just a urinal, <a href="https://www.youtube.com/watch?v=W2YFXsN335s" target="_blank">it's art</a>.</p>
 
           <p>R. Mutt is a free-to-mint generative collection of 2,048 unique, meme-able, 3-D, and fully-interactive, NFT parodies of <a href="https://en.wikipedia.org/wiki/Marcel_Duchamp" target="_blank">Marcel Duchamp</a>'s famous work, <a href="https://www.tate.org.uk/art/artworks/duchamp-fountain-t07573" target="_blank"><i>Fountain</i></a>.</p>
@@ -135,7 +148,7 @@
 
         <div class="col-xs-10 col-sm-10 col-md-10 col-lg-8 col-xl-8 text-left mx-2" >
 
-          <p style="color: #1F2333;">In a prank gone awry, Marcel Duchamp took the <a href="https://gildedage2.omeka.net/exhibits/show/highlights/movements/avantgarde"  style="color: #1F2333!important;" target="_blank">Society of Independent Artists'</a> up on an offer to display any work, so long as a fee was paid, at their first 'unjuried' 1917 exhibition in Midtown Manhattan.</p> 
+          <p style="color: #1F2333;">In a prank gone awry, Marcel Duchamp took the <a href="https://gildedage2.omeka.net/exhibits/show/highlights/movements/avantgarde"  style="color: #1F2333!important;" target="_blank">Society of Independent Artists'</a> up on an offer to display any work, so long as a fee was paid, at their first 'unjuried' 1917 exhibition in Midtown Manhattan.</p>
 
           <p style="color: #1F2333;">He submitted <i>Fountain</i>. An upturned urinal, he bought down the street, and signed 'R. Mutt.'</p>
 
@@ -170,7 +183,7 @@
         </div>
 
         <div class="col-xs-10 col-sm-10 col-md-10 col-lg-8 col-xl-8 text-left mx-2">
-           
+
           <p style="color: #1F2333;"></p>
 
 
@@ -197,7 +210,7 @@
         </div>
 
         <div class="col-xs-10 col-sm-10 col-md-10 col-lg-8 col-xl-8 text-left mx-2">
-           
+
           <p>R. Mutt is the <a href="https://art101.io/map.html" target="_blank">first drop in a series of three</a> free-to-mint generative NFT collections by <a href="https://art101.io" target="_blank">Art101</a>.</p>
 
           <p>With a licensed <a href="https://opensea.io/collection/boredapeyachtclub" target="_blank">Bored Ape</a>, <a href="https://opensea.io/collection/acrocalypse" target="_blank">Croc</a>, <a href="https://opensea.io/collection/mutant-ape-yacht-club" target="_blank">Mutant</a>, <a href="https://opensea.io/collection/goodmorningcafe" target="_blank">Moo</a>, and more, each unique <i>Fountain</i> comes <a href="https://www.tate.org.uk/art/art-terms/r/readymade" target="_blank">readymade</a> with a plethora of NFT-themed traits.</p>
@@ -320,7 +333,7 @@
     <h4>
   <a href="https://etherscan.io/address/0x7f81858ea3b43513adfaf0a20dc7b4c6ebe72919">XXXXXXXXXXXX<br class="d-lg-none">XXXXXXXXXXXX<br class="d-lg-none">XXXXXXXXXXXX</a>
   </h4>
-  
+
 </div>
 </div>
 </div>
@@ -372,9 +385,7 @@
       <script src="/js/vendor/metamask-onboarding.bundle.js"></script>
       <script src="/js/vendor/web3-1.3.6.min.js"></script>
       <script src="/js/plugins.js"></script>
-      <!-- <script src="/js/contracts/gbs.js"></script> -->
-      <script src="/js/contracts/mnd.js"></script>
-      <script src="/js/contracts/nfs.js"></script>
+      <script src="/js/contracts/rmutt.js"></script>
       <script src="/js/main.js"></script>
 
       <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
