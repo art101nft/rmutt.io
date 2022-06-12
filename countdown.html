@@ -1,0 +1,153 @@
+<!doctype html>
+<html class="no-js" lang="en">
+    <head>
+        <meta name="twitter:card" content="">
+<meta name="twitter:site" content="@art101NFT">
+<meta name="twitter:title" content="rmutt.io">
+<meta name="twitter:description" content="R. Mutt is a free-to-mint generative collection of 2,048 unique, meme-able, 3-D, and fully-interactive, NFT parodies of Marcel Duchamp's famous work, Fountain.">
+<meta name="twitter:creator" content="@art101NFT">
+<meta name="twitter:image" content="img/discord.png">
+<meta name="twitter:domain" content="https://rmutt.io">
+        <meta property="og:type" content="rmutt.io">
+        <meta property="og:title" content="rmutt.io - R. Mutt is a free-to-mint generative collection of 2,048 unique, meme-able, 3-D, and fully-interactive, NFT parodies of Marcel Duchamp's famous work, Fountain." />
+        <meta property="og:description" content="R. Mutt is a free-to-mint generative collection of 2,048 unique, meme-able, 3-D, and fully-interactive, NFT parodies of Marcel Duchamp's famous work, Fountain." />
+        <meta property="og:url" content="https://rmutt.io" />
+        <meta property="og:image" content="https://rmutt.io/img/discord.png" />
+
+
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>rmutt.io - R. Mutt is a free-to-mint generative collection of 2,048 unique, meme-able, 3-D, and fully-interactive, NFT parodies of Marcel Duchamp's famous work, Fountain.</title>
+    <meta name="Exploring Art History Through Generative Works and NFTs." co>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="canonical" href="https://rmutt.io" />
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+        <link rel="icon" href="favicon.ico" sizes="16x16" type="img/ico">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="/css/normalize.css">
+        <link rel="stylesheet" href="/css/main.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <script src="/js/vendor/modernizr-3.11.2.min.js"></script>
+        <script src="https://kit.fontawesome.com/25673ce6e4.js" crossorigin="anonymous"></script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-1D24DTP8CK"></script>
+        <script src="https://unpkg.com/focus-visible@5.0.2/dist/focus-visible.js" defer></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-1D24DTP8CK');
+        </script>
+    </head>
+    <body>
+
+
+     <nav>
+
+
+
+
+
+
+    <div class="container-fluid bg-transparent" style="margin-top: 8px!important;">
+        <div class="row align-items-center">
+            <div class="col-6 nav-brand text-left">
+                <a href="index.html"><img src="img/rmutt.svg" style="height:72px;" /></a>
+            </div>
+            <div class="col-6 nav-brand text-right">
+              <a href="https://opensea.io/collection/rmutt" target="_blank"><img src="img/os.svg" style="height:40px; margin-right: 8px;"/></a>
+              <a href="https://www.gem.xyz/collection/rmutt/" target="_blank"><img src="img/gem.svg" style="height:40px;"  target="_blank"/></a>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+</nav>
+
+
+<main>
+
+
+<div class="container-fluid bg-transparent p-2">
+    <div class="row justify-content-center">
+        <div class="col-12 text-center">
+            <img src="img/0058.png" class="img-fluid" style="max-height: 248px"/>
+        </div>
+        <div class="col-xs-10 col-sm-10 col-md-10 col-lg-8 col-xl-8 text-center">
+            <h4 style="color: #1F2333;"><b>Countdown</b></h4>
+            <h3><b>The remaining supply will unlock in</b></h3>
+            <div class="" style="margin-top:16px;"></div>
+            <h3 id="publicsaleCountdown" style="background:white; color: #ee3024; margin-top:12px;"></h3>
+            <a id="goHome" class="Mutt_Button2 hidden" style="margin-right:16px;" href="/">Go Mint</a>
+        </div>
+    </div>
+</div>
+
+
+</main>
+
+
+      <script src="/js/vendor/web3-1.3.6.min.js"></script>
+      <script src="/js/contracts/rmutt.js?v=1"></script>
+      <script>
+
+      window.addEventListener('DOMContentLoaded', async () => {
+        const w3 = new Web3(Web3.givenProvider || "http://127.0.0.1:7545");
+        const contract = new w3.eth.Contract(contractABI, contractAddress);
+        var timeLeft = await contract.methods.getTimeUntilNextPhase().call();
+        var now = new Date().getTime();
+        var later = new Date(Number(now) + (Number(timeLeft) * 1000)).getTime();
+
+        var y = setInterval(async function() {
+          var now = new Date().getTime();
+          var distance = later - now;
+          var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          document.getElementById("publicsaleCountdown").innerHTML = "<b>" + hours + "h "
+          + minutes + "m " + seconds + "s " + "</b>";
+          if (distance < 0) {
+            clearInterval(y);
+            document.getElementById("publicsaleCountdown").innerHTML = '<b>Public Minting: Now!</b>';
+            document.getElementById("goHome").classList.remove('hidden');
+          }
+        }, 1000);
+      });
+
+      // var presaleCountdownDate = new Date("2022-02-27T23:45:00.000-08:00").getTime();
+      // var y = setInterval(function() {
+      //   var now = new Date().getTime();
+      //   var distance = presaleCountdownDate - now;
+      //   var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      //   var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      //   var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      //   var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      //   document.getElementById("presaleCountdown").innerHTML = "<b>Early Minting: " + days + "d " + hours + "h "
+      //   + minutes + "m " + seconds + "s " + "</b>";
+      //   if (distance < 0) {
+      //     clearInterval(y);
+      //     document.getElementById("presaleCountdown").innerHTML = '<b>Early Minting: Now!</b>';
+      //     document.getElementById("mintLink").style.display = 'block';
+      //   }
+      // }, 1000);
+
+      function openNav() {
+        document.getElementById("mySidenav").style.width = "320px";
+      }
+
+      function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+      }
+      </script>
+
+      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    </body>
+</html>
